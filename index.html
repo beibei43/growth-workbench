@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="rose">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#e54c5e">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="生长工作台">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<title>生长发育工作台</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 17l5-5 4 3 8-9"/><path d="M16 6h4v4"/>
+        </svg>
+      </div>
+      <div>
+        <h1>生长发育工作台</h1>
+        <p class="brand-sub">身高 · 体重 · 头围 全程记录</p>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <div class="theme-switch" id="themeSwitch" role="group" aria-label="切换配色">
+        <button class="theme-dot theme-green" data-theme="green" type="button" title="清新绿" aria-label="清新绿"></button>
+        <button class="theme-dot theme-gold" data-theme="gold" type="button" title="温暖黄" aria-label="温暖黄"></button>
+        <button class="theme-dot theme-purple" data-theme="purple" type="button" title="优雅紫" aria-label="优雅紫"></button>
+        <button class="theme-dot theme-rose" data-theme="rose" type="button" title="玫红" aria-label="玫红"></button>
+      </div>
+      <button class="icon-btn" id="btnSettings" type="button" aria-label="设置">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.03 1.56V21a2 2 0 1 1-4 0v-.09A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.64 15a1.7 1.7 0 0 0-1.56-1.03H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.64a1.7 1.7 0 0 0 1.03-1.56V3a2 2 0 1 1 4 0v.09A1.7 1.7 0 0 0 15 4.6a1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.36 9a1.7 1.7 0 0 0 1.56 1.03H21a2 2 0 1 1 0 4h-.09A1.7 1.7 0 0 0 19.4 15z"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <nav class="child-tabs" id="childTabs" role="tablist" aria-label="选择孩子"></nav>
+
+  <main>
+    <section class="card hero-card" id="heroCard" aria-label="当前身高参考"></section>
+
+    <section class="summary" id="summary" aria-label="当前概览"></section>
+
+    <section class="card chart-card">
+      <div class="card-head">
+        <div>
+          <h2>身高生长曲线</h2>
+          <p class="muted small">依据国家卫生行业标准 WS/T 423—2022 与 WS/T 612—2018</p>
+        </div>
+        <label class="switch-wrap small">
+          <input type="checkbox" id="toggleBand" checked>
+          <span>正常范围带</span>
+        </label>
+      </div>
+      <div class="legend" id="legend">
+        <span><i class="ln ln-actual"></i>实际身高</span>
+        <span><i class="ln ln-ref"></i>参考身高 P50</span>
+        <span><i class="ln ln-proj"></i>趋势预估</span>
+        <span><i class="ln ln-band"></i>P3–P97</span>
+      </div>
+      <div class="chart-wrap" id="chartWrap">
+        <canvas id="chart" role="img" aria-label="身高生长曲线，包含实际身高、参考身高和趋势预估三条线"></canvas>
+        <div class="chart-tip" id="chartTip" hidden></div>
+      </div>
+      <p class="note">趋势预估为按当前生长轨道做的数学延伸，仅供观察参考，<strong>不是医学上的成年身高预测</strong>。真实身高受骨龄、青春期 timing、营养等多因素影响。</p>
+    </section>
+
+    <section class="card records-card">
+      <div class="card-head">
+        <div>
+          <h2>测量记录</h2>
+          <p class="muted small" id="recordCount"></p>
+        </div>
+        <button class="primary-btn" id="btnAdd" type="button">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          新增记录
+        </button>
+      </div>
+      <div class="record-list" id="recordList"></div>
+    </section>
+
+    <section class="card data-card">
+      <div class="card-head"><h2>数据管理</h2></div>
+      <p class="muted small">数据保存在本设备浏览器中。换设备或清理浏览器前，请先导出备份。</p>
+      <div class="btn-row">
+        <button class="ghost-btn" id="btnExport" type="button">导出备份</button>
+        <button class="ghost-btn" id="btnImport" type="button">导入备份</button>
+        <input type="file" id="fileImport" accept="application/json,.json" hidden>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    本工作台依据国家卫生行业标准提供参考对照，不构成医学诊断。异常情况请就诊儿童保健科或儿童内分泌科。
+  </footer>
+</div>
+
+<div class="sheet-backdrop" id="recordSheet" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <div class="sheet-head">
+      <h3 id="sheetTitle">新增测量记录</h3>
+      <button class="icon-btn" id="btnCloseRecord" type="button" aria-label="关闭">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <form id="recordForm">
+      <label class="field">
+        <span>测量日期</span>
+        <input type="date" id="fDate" required>
+      </label>
+      <div class="age-preview" id="agePreview">—</div>
+      <div class="field-grid">
+        <label class="field"><span>身高 (cm)</span><input type="number" id="fHeight" step="0.1" min="30" max="230" placeholder="如 139.4"></label>
+        <label class="field"><span>体重 (kg)</span><input type="number" id="fWeight" step="0.1" min="1" max="150" placeholder="如 30.7"></label>
+        <label class="field"><span>头围 (cm)</span><input type="number" id="fHead" step="0.1" min="20" max="70" placeholder="选填"></label>
+      </div>
+      <p class="hint">至少填写身高或体重其中一项。0 值视为未测量。</p>
+      <div class="form-bmi" id="formBmi" hidden></div>
+      <div class="sheet-actions">
+        <button type="button" class="ghost-btn danger" id="btnDelete" hidden>删除</button>
+        <span class="spacer"></span>
+        <button type="button" class="ghost-btn" id="btnCancelRecord">取消</button>
+        <button type="submit" class="primary-btn">保存</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="sheet-backdrop" id="settingsSheet" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <div class="sheet-head">
+      <h3 id="settingsTitle">设置</h3>
+      <button class="icon-btn" id="btnCloseSettings" type="button" aria-label="关闭">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <form id="settingsForm">
+      <div class="field"><span>哥哥姓名</span><input type="text" id="sNameGe" required></div>
+      <div class="field"><span>哥哥出生日期</span><input type="date" id="sBirthGe" required></div>
+      <div class="field"><span>弟弟姓名</span><input type="text" id="sNameDi" required></div>
+      <div class="field"><span>弟弟出生日期</span><input type="date" id="sBirthDi" required></div>
+      <div class="sheet-actions">
+        <span class="spacer"></span>
+        <button type="button" class="ghost-btn" id="btnCancelSettings">取消</button>
+        <button type="submit" class="primary-btn">保存</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
